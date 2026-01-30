@@ -1,0 +1,37 @@
+name: अपडेट data.json
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Update data.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_OWNER: asimons81
+        run: |
+          python tools/update_data.py
+      - name: Commit changes
+        run: |
+          if git status --porcelain | grep -q "data.json"; then
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git add data.json
+            git commit -m "Auto-update data.json"
+            git push
+          else
+            echo "No changes"
+          fi

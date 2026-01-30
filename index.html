@@ -40,7 +40,7 @@
       <div class="card">
         <div class="muted">Shipping</div>
         <div class="stat" id="ships">0</div>
-        <div class="muted">ships today • streak: <span id="shipStreak">0</span></div>
+        <div class="muted">ships today • commits: <span id="commitCount">0</span> • streak: <span id="shipStreak">0</span></div>
       </div>
 
       <div class="card">
@@ -78,6 +78,7 @@
     document.getElementById('outputBuilds').textContent = data.output.builds || 0;
 
     document.getElementById('ships').textContent = data.shipping.ships || 0;
+    document.getElementById('commitCount').textContent = data.shipping.commit_count || 0;
     document.getElementById('shipStreak').textContent = data.shipping.streak || 0;
 
     const mickList = document.getElementById('mickList');
