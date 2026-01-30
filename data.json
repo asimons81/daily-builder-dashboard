@@ -1,0 +1,25 @@
+{
+  "date": "2026-01-30",
+  "focus": {
+    "sprints": 0,
+    "minutes": 0
+  },
+  "output": {
+    "posts": 0,
+    "replies": 0,
+    "builds": 0
+  },
+  "shipping": {
+    "ships": 0,
+    "streak": 0
+  },
+  "mick_improvements": [
+    "Set up nightly build pipeline + Pages delivery",
+    "Published landing page + ZIP for easy sharing"
+  ],
+  "summary": {
+    "wins": [""],
+    "lessons": [""],
+    "tomorrow_move": ""
+  }
+}
