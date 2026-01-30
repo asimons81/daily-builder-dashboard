@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Builder Dashboard</title>
+  <style>
+    :root { --bg:#0f1115; --card:#151923; --muted:#9aa4b2; --accent:#2d6cdf; --good:#22c55e; --warn:#f59e0b; }
+    * { box-sizing:border-box; font-family: Inter, system-ui, sans-serif; }
+    body { margin:0; background:var(--bg); color:#e6e6e6; }
+    .wrap { max-width: 1100px; margin: 32px auto; padding: 0 20px; }
+    h1 { margin:0 0 6px; font-size: 32px; }
+    .sub { color: var(--muted); margin-bottom: 18px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; }
+    .card { background: var(--card); border:1px solid #242b38; border-radius: 14px; padding: 16px; }
+    .stat { font-size: 36px; font-weight: 800; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .row { display:flex; gap:8px; align-items:center; flex-wrap: wrap; }
+    button { background: var(--accent); color: white; border: none; padding: 10px 14px; border-radius: 10px; cursor:pointer; font-weight:600; }
+    button.secondary { background: #263246; }
+    button.good { background: var(--good); }
+    input, textarea { width:100%; background:#101520; border:1px solid #263246; color:#e6e6e6; padding:10px 12px; border-radius:10px; }
+    textarea { min-height: 90px; }
+    .progress { height: 10px; background:#1c2332; border-radius: 999px; overflow:hidden; }
+    .bar { height:100%; background: var(--accent); width:0%; }
+    .log { max-height: 180px; overflow:auto; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Daily Builder Dashboard</h1>
+    <div class="sub">Track focus, output, shipping, and Mick self‑improvements. Saves locally.</div>
+
+    <div class="grid">
+      <!-- Focus Timer -->
+      <div class="card">
+        <div class="muted">Focus Sprint</div>
+        <div class="stat" id="timer">25:00</div>
+        <div class="row">
+          <button id="start">Start</button>
+          <button id="pause" class="secondary">Pause</button>
+          <button id="reset" class="secondary">Reset</button>
+        </div>
+        <div style="margin-top:12px;">
+          <label class="muted">Sprint minutes</label>
+          <input id="minutes" type="number" min="5" max="180" value="25" />
+        </div>
+      </div>
+
+      <!-- Output Tracker -->
+      <div class="card">
+        <div class="muted">Output Today</div>
+        <div class="stat" id="outputCount">0</div>
+        <div class="muted">Goal: <span id="outputGoal">10</span></div>
+        <div class="progress"><div class="bar" id="outputBar"></div></div>
+        <div class="row" style="margin-top:12px;">
+          <button id="out1">+1</button>
+          <button id="out5" class="secondary">+5</button>
+          <button id="out10" class="secondary">+10</button>
+          <button id="outUndo" class="secondary">Undo</button>
+        </div>
+        <div style="margin-top:10px;">
+          <label class="muted">Set output goal</label>
+          <input id="outputGoalInput" type="number" min="1" value="10" />
+          <button id="saveOutputGoal" class="good" style="margin-top:8px;">Save goal</button>
+        </div>
+      </div>
+
+      <!-- Shipping -->
+      <div class="card">
+        <div class="muted">Shipping</div>
+        <div class="stat" id="shipCount">0</div>
+        <div class="muted">Ships today</div>
+        <div class="row" style="margin-top:12px;">
+          <button id="shipAdd">Ship +1</button>
+          <button id="shipUndo" class="secondary">Undo</button>
+          <button id="shipReset" class="secondary">Reset day</button>
+        </div>
+        <div class="muted" style="margin-top:10px;">Streak: <span id="shipStreak">0</span> days</div>
+      </div>
+
+      <!-- Mick Improvements -->
+      <div class="card">
+        <div class="muted">Mick Self‑Improvements</div>
+        <textarea id="mickNotes" placeholder="Log one improvement per day"></textarea>
+        <div class="row" style="margin-top:8px;">
+          <button id="saveMick" class="secondary">Save</button>
+          <button id="exportMick" class="secondary">Export JSON</button>
+        </div>
+        <div class="muted" style="margin-top:10px;">Log</div>
+        <div class="log" id="mickLog"></div>
+      </div>
+
+      <!-- Scorecard -->
+      <div class="card">
+        <div class="muted">Daily Scorecard</div>
+        <div class="stat" id="score">0</div>
+        <div class="muted">Score = output + (ships*5) + (sprints*2)</div>
+        <div class="muted" style="margin-top:8px;">Sprints completed: <span id="sprintCount">0</span></div>
+        <div class="row" style="margin-top:10px;">
+          <button id="resetAll" class="secondary">Reset Day</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const todayKey = new Date().toISOString().slice(0,10);
+  const key = `dailyBuilder:${todayKey}`;
+  const metaKey = `dailyBuilder:meta`;
+
+  const state = JSON.parse(localStorage.getItem(key) || '{"output":0,"ships":0,"sprints":0,"mickLog":[],"mickNotes":""}');
+  const meta = JSON.parse(localStorage.getItem(metaKey) || '{"outputGoal":10,"shipStreak":0,"lastShip":""}');
+
+  const outputCountEl = document.getElementById('outputCount');
+  const outputGoalEl = document.getElementById('outputGoal');
+  const outputBarEl = document.getElementById('outputBar');
+  const shipCountEl = document.getElementById('shipCount');
+  const shipStreakEl = document.getElementById('shipStreak');
+  const mickLogEl = document.getElementById('mickLog');
+  const mickNotesEl = document.getElementById('mickNotes');
+  const scoreEl = document.getElementById('score');
+  const sprintCountEl = document.getElementById('sprintCount');
+
+  function save(){ localStorage.setItem(key, JSON.stringify(state)); localStorage.setItem(metaKey, JSON.stringify(meta)); }
+
+  function render(){
+    outputCountEl.textContent = state.output;
+    outputGoalEl.textContent = meta.outputGoal;
+    shipCountEl.textContent = state.ships;
+    shipStreakEl.textContent = meta.shipStreak;
+    mickNotesEl.value = state.mickNotes || '';
+    mickLogEl.innerHTML = state.mickLog.map(l => `<div>• ${l}</div>`).join('') || '<span class="muted">No improvements yet</span>';
+    const pct = Math.min(100, Math.round((state.output / meta.outputGoal) * 100));
+    outputBarEl.style.width = pct + '%';
+    const score = state.output + (state.ships * 5) + (state.sprints * 2);
+    scoreEl.textContent = score;
+    sprintCountEl.textContent = state.sprints;
+  }
+
+  function addOutput(n){ state.output += n; save(); render(); }
+  document.getElementById('out1').onclick = () => addOutput(1);
+  document.getElementById('out5').onclick = () => addOutput(5);
+  document.getElementById('out10').onclick = () => addOutput(10);
+  document.getElementById('outUndo').onclick = () => { if(state.output>0){ state.output -= 1; save(); render(); } };
+  document.getElementById('saveOutputGoal').onclick = () => {
+    meta.outputGoal = parseInt(document.getElementById('outputGoalInput').value || '10',10);
+    save(); render();
+  };
+
+  document.getElementById('shipAdd').onclick = () => {
+    state.ships += 1;
+    if(meta.lastShip !== todayKey) { meta.shipStreak += 1; meta.lastShip = todayKey; }
+    save(); render();
+  };
+  document.getElementById('shipUndo').onclick = () => { if(state.ships>0){ state.ships -= 1; save(); render(); } };
+  document.getElementById('shipReset').onclick = () => { if(confirm('Reset shipping today?')){ state.ships=0; save(); render(); } };
+
+  document.getElementById('saveMick').onclick = () => {
+    const note = mickNotesEl.value.trim();
+    if(note){ state.mickLog.unshift(`${note} @ ${new Date().toLocaleTimeString()}`); state.mickNotes = ''; }
+    save(); render();
+  };
+  document.getElementById('exportMick').onclick = () => {
+    const blob = new Blob([JSON.stringify(state.mickLog, null, 2)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `mick-improvements-${todayKey}.json`; a.click();
+  };
+
+  // Timer
+  let remaining = 25 * 60;
+  let interval = null;
+  const timerEl = document.getElementById('timer');
+  function renderTimer(){
+    const m = Math.floor(remaining/60).toString().padStart(2,'0');
+    const s = Math.floor(remaining%60).toString().padStart(2,'0');
+    timerEl.textContent = `${m}:${s}`;
+  }
+  function start(){
+    if(interval) return;
+    interval = setInterval(() => {
+      remaining -= 1;
+      if(remaining <= 0){
+        clearInterval(interval); interval = null; remaining = 0;
+        state.sprints += 1; save(); render();
+        alert('Sprint complete');
+      }
+      renderTimer();
+    }, 1000);
+  }
+  function pause(){ if(interval){ clearInterval(interval); interval=null; } }
+  function reset(){ pause(); remaining = parseInt(document.getElementById('minutes').value || '25',10) * 60; renderTimer(); }
+
+  document.getElementById('start').onclick = start;
+  document.getElementById('pause').onclick = pause;
+  document.getElementById('reset').onclick = reset;
+  document.getElementById('minutes').onchange = reset;
+
+  document.getElementById('resetAll').onclick = () => {
+    if(confirm('Reset all for today?')){
+      state.output = 0; state.ships = 0; state.sprints = 0; state.mickLog = []; state.mickNotes = '';
+      save(); render();
+    }
+  };
+
+  render(); renderTimer();
+</script>
+</body>
+</html>
