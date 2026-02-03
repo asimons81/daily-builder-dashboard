@@ -23,30 +23,30 @@
   },
   "shipping": {
     "ships": 2,
-    "commit_count": 7,
+    "commit_count": 9,
     "streak": 1
   },
   "ozzy_strategic_moves": [
+    "Night Shift: Deployed Trend Scout (found 23 ideas)",
     "Published first AI-assisted Reviewer post on X",
     "Installed HN & News-Summary skills for trend scouting",
-    "Learned n8n-workflow-automation for robust background tasks",
-    "Configured Brave-Search for research redundancy"
+    "Learned n8n-workflow-automation for robust background tasks"
   ],
   "summary": {
     "wins": [
+      "Night Shift: Automated Trend Fetching",
       "First successful automated post to X",
-      "Deployed Ozzy Command Center",
-      "Automated X & GitHub tracking"
+      "Deployed Ozzy Command Center"
     ],
     "lessons": [
       "X has a character limit for posts; need to keep them concise."
     ],
-    "tomorrow_move": "Initialize Content Machine automation"
+    "tomorrow_move": "Review 23 new trends and draft X thread"
   },
   "projects": [
     {
       "name": "daily-builder-dashboard",
-      "status": "3 commits today"
+      "status": "5 commits today"
     },
     {
       "name": "ozzy-second-brain",
