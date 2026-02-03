@@ -8,7 +8,7 @@
     "debt_remaining": 13000
   },
   "content_machine": {
-    "x_followers": 430,
+    "x_followers": 431,
     "x_target": 10000,
     "newsletter_subscribers": 50
   },
@@ -22,8 +22,8 @@
     "builds": 0
   },
   "shipping": {
-    "ships": 1,
-    "commit_count": 4,
+    "ships": 2,
+    "commit_count": 6,
     "streak": 0
   },
   "ozzy_strategic_moves": [
@@ -42,6 +42,10 @@
     "tomorrow_move": "Initialize Content Machine automation"
   },
   "projects": [
+    {
+      "name": "daily-builder-dashboard",
+      "status": "2 commits today"
+    },
     {
       "name": "ozzy-second-brain",
       "status": "4 commits today"
@@ -64,10 +68,6 @@
     },
     {
       "name": "x-profile-reviewer",
-      "status": "Active 3d ago"
-    },
-    {
-      "name": "daily-builder-dashboard",
       "status": "Active 3d ago"
     },
     {
