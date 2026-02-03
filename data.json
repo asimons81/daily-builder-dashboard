@@ -23,18 +23,20 @@
   },
   "shipping": {
     "ships": 2,
-    "commit_count": 6,
+    "commit_count": 7,
     "streak": 0
   },
   "ozzy_strategic_moves": [
-    "Rebranded dashboard to Ozzy Command Center",
-    "Integrated Operation Exit Strategy tracking",
-    "Set 10k X follower milestone"
+    "Installed HN & News-Summary skills for trend scouting",
+    "Learned n8n-workflow-automation for robust background tasks",
+    "Configured Brave-Search for research redundancy",
+    "Synchronized mission-control-7x9p2.html"
   ],
   "summary": {
     "wins": [
       "Deployed Ozzy Command Center",
-      "Synchronized model hierarchy"
+      "Automated X & GitHub tracking",
+      "Expanded skill-set with 5 new integrations"
     ],
     "lessons": [
       "GitHub API requires a token for detailed commit tracking"
@@ -44,7 +46,7 @@
   "projects": [
     {
       "name": "daily-builder-dashboard",
-      "status": "2 commits today"
+      "status": "3 commits today"
     },
     {
       "name": "ozzy-second-brain",
